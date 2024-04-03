@@ -24,7 +24,15 @@ const {
 } = require('./utils');
 const CronJob = require('cron').CronJob;
 
-const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+const bot = new TelegramBot(BOT_TOKEN, {
+  polling: true,
+  request: {
+    agentOptions: {
+      keepAlive: true,
+      family: 4,
+    },
+  },
+});
 let hasNewOrder = false;
 let takeFood = process.env.AUTO_RANDOM === 'true';
 let returnBox = false;
@@ -975,8 +983,10 @@ const jobClean = new CronJob(
     returnBox = false;
 
     const date = new Date().getDate();
+    console.log('DATE ', date);
+    const resetDate = +(process.env.RESET_DATE ?? '2');
 
-    if (date % 10 > 1 && date % 10 <= 3) {
+    if (date % 10 === resetDate || date % 10 === resetDate + 1) {
       const kindBeesHistories = await getData(FILE_PATHS.BEES);
 
       if (kindBeesHistories.length > 1) {

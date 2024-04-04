@@ -133,6 +133,7 @@ bot.on('message', (msg) => {
 
   //validate order(s)
   const isNotCommand =
+    msg.text &&
     msg.text.startsWith('/') &&
     !commands.find((x) => msg.text.toLowerCase().startsWith(x));
 
@@ -983,7 +984,7 @@ const jobClean = new CronJob(
     returnBox = false;
 
     const date = new Date().getDate();
-    console.log('DATE ', date);
+    console.log('##DATE:', date);
     const resetDate = +(process.env.RESET_DATE ?? '2');
 
     if (date % 10 === resetDate || date % 10 === resetDate + 1) {

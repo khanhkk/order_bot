@@ -36,6 +36,7 @@ const bot = new TelegramBot(BOT_TOKEN, {
 let hasNewOrder = false;
 let takeFood = process.env.AUTO_RANDOM === 'true';
 let returnBox = false;
+let latchMessageId = null;
 
 bot.setMyCommands([
   // {
@@ -727,6 +728,8 @@ const jobOrder = new CronJob(
     const imagePath = './assets/images/photo_2023-12-29_10-17-26.jpg';
     const imagePath2 = './assets/images/com_pho_menu.jpg';
 
+    latchMessageId = null;
+
     if (existsSync(imagePath) && existsSync(imagePath2)) {
       // const imgBuf = await fs.readFile(imagePath);
       // bot.sendPhoto(GROUP_ID, imgBuf, {
@@ -922,7 +925,7 @@ const jobReAnnouncePayment = new CronJob(
     const inlineKeyboard = await getKeyboardOrders(orders);
 
     if (inlineKeyboard) {
-      bot.sendMessage(
+      const message = await bot.sendMessage(
         GROUP_ID,
         `Cuối ngày rồi, đừng quên trả thóc ngày (${format(
           new Date(),
@@ -935,6 +938,8 @@ const jobReAnnouncePayment = new CronJob(
           },
         },
       );
+
+      latchMessageId = message.message_id;
     }
   },
   null,
@@ -950,6 +955,7 @@ const jobClean = new CronJob(
 
     if (Object.keys(orders).length) {
       for (const owner in orders) {
+        orders[owner].msId = latchMessageId;
         orders[owner].received && delete orders[owner];
       }
 

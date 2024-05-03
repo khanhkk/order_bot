@@ -232,18 +232,6 @@ bot.onText(KEY.ORDER, async (msg, match) => {
     returnBox = true;
   }
 
-  // const newOrders = match.input
-  //   .split(new RegExp(KEY.GET_ORDER))
-  //   .filter((o) => !!o.trim());
-  // for (const order of newOrders) {
-  //   orders[toOrderKey(msg.from.id)] = {
-  //     name: getName(msg.from),
-  //     text: order.trim(),
-  //     paid: false,
-  //     received: false,
-  //   };
-  // }
-
   await updateData(FILE_PATHS.ORDER, orders);
   hasNewOrder = true;
 });
@@ -474,11 +462,6 @@ bot.on('edited_message', async (query) => {
   //accept order
   if (new RegExp(KEY.ORDER).test(query.text)) {
     const orders = await getData(FILE_PATHS.ORDER);
-    //const text = query.text.replace(REGEXP_REPLACE.ORDER, ' ').trim();
-
-    // orders[toOrderKey(query.from.id)] = orders[toOrderKey(query.from.id)] || {};
-    // orders[toOrderKey(query.from.id)].text = text;
-    // orders[toOrderKey(query.from.id)].name = getName(query.from);
 
     const text = query.text.trim();
     const keys = Object.keys(orders).filter((k) =>
@@ -708,7 +691,7 @@ bot.on('callback_query', async (query) => {
 });
 
 const jobListOrder = new CronJob(
-  '*/2 10,11 * * 1-5',
+  '*/2 10,11 * * 1-6',
   async () => {
     if (hasNewOrder) {
       const orders = await getData(FILE_PATHS.ORDER);
@@ -739,16 +722,21 @@ const jobOrder = new CronJob(
   '10 10 * * 1-5',
   async () => {
     bot.sendChatAction(GROUP_ID, 'typing');
-    bot.sendMessage(GROUP_ID, `Nhắc nhẹ: Order cơm thôi kẻo đói mn ơi 🍚🍚🍚`);
+    bot.sendMessage(GROUP_ID, `Nhắc nhẹ: Order cơm thôi, kẻo đói mn ơi 🍚🍚🍚`);
 
     const imagePath = './assets/images/photo_2023-12-29_10-17-26.jpg';
+    const imagePath2 = './assets/images/com_pho_menu.jpg';
 
-    if (existsSync(imagePath)) {
-      const imgBuf = await fs.readFile(imagePath);
-      bot.sendPhoto(GROUP_ID, imgBuf, {
-        caption:
-          'https://shopeefood.vn/ha-noi/com-pho-com-ga-com-bo-duong-khue',
-      });
+    if (existsSync(imagePath) && existsSync(imagePath2)) {
+      // const imgBuf = await fs.readFile(imagePath);
+      // bot.sendPhoto(GROUP_ID, imgBuf, {
+      //   caption:
+      //     'https://shopeefood.vn/ha-noi/com-pho-com-ga-com-bo-duong-khue',
+      // });
+      bot.sendMediaGroup(GROUP_ID, [
+        { type: 'photo', media: imagePath },
+        { type: 'photo', media: imagePath2 },
+      ]);
     }
   },
   null,
@@ -768,7 +756,7 @@ function shuffle(a) {
 }
 
 const jobTakeLunch = new CronJob(
-  '40 11 * * 1-5',
+  '40 11 * * 1-6',
   async function () {
     const orders = await getData(FILE_PATHS.ORDER);
     const orderOwners = Object.keys(orders);
@@ -853,7 +841,7 @@ const jobTakeLunch = new CronJob(
 );
 
 const jobReturnBox = new CronJob(
-  '40 13 * * 1-5',
+  '40 13 * * 1-6',
   async function () {
     if (returnBox && takeFood) {
       const kindBeesHistories = await getData(FILE_PATHS.BEES);
@@ -876,7 +864,7 @@ const jobReturnBox = new CronJob(
 );
 
 const jobAnnouncePayment = new CronJob(
-  '0 15 * * 1-5',
+  '0 15 * * 1-6',
   async function () {
     const config = await getData(FILE_PATHS.CONFIG);
     const inlineKeyboard = await getKeyboardOrders();
@@ -923,7 +911,7 @@ const jobAnnouncePayment = new CronJob(
 );
 
 const jobReAnnouncePayment = new CronJob(
-  '0 17 * * 1-5',
+  '0 17 * * 1-6',
   async function () {
     const orders = await getData(FILE_PATHS.ORDER);
 

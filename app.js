@@ -36,7 +36,6 @@ const bot = new TelegramBot(BOT_TOKEN, {
 let hasNewOrder = false;
 let takeFood = process.env.AUTO_RANDOM === 'true';
 let returnBox = false;
-let latchMessageId = null;
 
 bot.setMyCommands([
   // {
@@ -128,6 +127,7 @@ bot.on('message', (msg) => {
     '/registerpayee',
     '/cancel',
     '/unpaid',
+    '/paid',
     '/random',
     '/returnbox',
   ];
@@ -351,6 +351,58 @@ bot.onText(KEY.UNPAID, async (msg) => {
 
     bot.sendChatAction(msg.chat.id, 'typing');
     bot.sendMessage(msg.chat.id, message);
+  }
+});
+
+bot.onText(KEY.PAID, async (msg) => {
+  const config = await getData(FILE_PATHS.CONFIG);
+  if (msg.from.username !== config.payee.name) {
+    bot.sendChatAction(msg.chat.id, 'typing');
+    bot.sendMessage(msg.chat.id, 'Chức năng chỉ dành cho admin');
+    return;
+  }
+
+  // user send request
+  const username = msg.text.replace(KEY.PAID, '').trim();
+
+  if (!username) {
+    bot.sendChatAction(msg.chat.id, 'typing');
+    bot.sendMessage(msg.chat.id, 'Nhập <b>@username</b> đã thanh toán', {
+      parse_mode: 'HTML',
+    });
+    return;
+  }
+
+  const orders = await getData(FILE_PATHS.OLD);
+
+  if (Object.keys(orders).length) {
+    for (const owner in orders) {
+      if (orders[owner].name !== username) {
+        delete orders[owner];
+      }
+
+      orders[owner].paid && orders[owner].received && delete orders[owner];
+    }
+
+    const inlineKeyboard = await getKeyboardOrders(orders, 'date');
+
+    if (inlineKeyboard) {
+      bot.sendMessage(
+        GROUP_ID,
+        `Danh sách order của <b>${username}</b> chưa thanh toán`,
+        {
+          reply_markup: {
+            resize_keyboard: true,
+            inline_keyboard: inlineKeyboard,
+          },
+          parse_mode: 'HTML',
+        },
+      );
+      return;
+    }
+
+    bot.sendChatAction(msg.chat.id, 'typing');
+    bot.sendMessage(msg.chat.id, '**Không có dữ liệu**');
   }
 });
 
@@ -728,8 +780,6 @@ const jobOrder = new CronJob(
     const imagePath = './assets/images/photo_2023-12-29_10-17-26.jpg';
     const imagePath2 = './assets/images/com_pho_menu.jpg';
 
-    latchMessageId = null;
-
     if (existsSync(imagePath) && existsSync(imagePath2)) {
       // const imgBuf = await fs.readFile(imagePath);
       // bot.sendPhoto(GROUP_ID, imgBuf, {
@@ -925,7 +975,7 @@ const jobReAnnouncePayment = new CronJob(
     const inlineKeyboard = await getKeyboardOrders(orders);
 
     if (inlineKeyboard) {
-      const message = await bot.sendMessage(
+      bot.sendMessage(
         GROUP_ID,
         `Cuối ngày rồi, đừng quên trả thóc ngày (${format(
           new Date(),
@@ -938,8 +988,6 @@ const jobReAnnouncePayment = new CronJob(
           },
         },
       );
-
-      latchMessageId = message.message_id;
     }
   },
   null,
@@ -955,7 +1003,6 @@ const jobClean = new CronJob(
 
     if (Object.keys(orders).length) {
       for (const owner in orders) {
-        orders[owner].msId = latchMessageId;
         orders[owner].received && delete orders[owner];
       }
 

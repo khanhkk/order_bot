@@ -626,7 +626,8 @@ bot.on('callback_query', async (query) => {
         !isEqual(
           startOfDay(new Date(query.message.date * 1000)),
           startOfDay(new Date()),
-        )
+        ) ||
+        query.message.chat.id != GROUP_ID
       ) {
         const orders = await getData(FILE_PATHS.OLD);
 

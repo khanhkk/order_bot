@@ -273,8 +273,8 @@ bot.onText(KEY.CANCEL, async (msg, match) => {
 
   await updateData(FILE_PATHS.ORDER, orders);
 
-  bot.sendChatAction(GROUP_ID, 'typing');
-  bot.sendMessage(GROUP_ID, messageList[msStt], {
+  bot.sendChatAction(msg.chat.id, 'typing');
+  bot.sendMessage(msg.chat.id, messageList[msStt], {
     parse_mode: 'HTML',
   });
 
@@ -389,7 +389,7 @@ bot.onText(KEY.PAID, async (msg) => {
 
     if (inlineKeyboard) {
       bot.sendMessage(
-        GROUP_ID,
+        msg.chat.id,
         `Danh sách order của <b>${username}</b> chưa thanh toán`,
         {
           reply_markup: {

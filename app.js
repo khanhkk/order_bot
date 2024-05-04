@@ -379,6 +379,7 @@ bot.onText(KEY.PAID, async (msg) => {
     for (const owner in orders) {
       if (orders[owner].name !== username) {
         delete orders[owner];
+        continue;
       }
 
       orders[owner].paid && orders[owner].received && delete orders[owner];

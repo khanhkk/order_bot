@@ -774,7 +774,7 @@ const jobListOrder = new CronJob(
 );
 
 const jobOrder = new CronJob(
-  '10 10 * * 1-5',
+  '30 09 * * 1-5',
   async () => {
     bot.sendChatAction(GROUP_ID, 'typing');
     bot.sendMessage(GROUP_ID, `Nhắc nhẹ: Order cơm thôi, kẻo đói mn ơi 🍚🍚🍚`);
@@ -783,15 +783,10 @@ const jobOrder = new CronJob(
     const imagePath2 = './assets/images/com_pho_menu.jpg';
 
     if (existsSync(imagePath) && existsSync(imagePath2)) {
-      // const imgBuf = await fs.readFile(imagePath);
-      // bot.sendPhoto(GROUP_ID, imgBuf, {
-      //   caption:
-      //     'https://shopeefood.vn/ha-noi/com-pho-com-ga-com-bo-duong-khue',
-      // });
-      bot.sendMediaGroup(GROUP_ID, [
-        { type: 'photo', media: imagePath },
-        { type: 'photo', media: imagePath2 },
-      ]);
+      // bot.sendMediaGroup(GROUP_ID, [
+      //   { type: 'photo', media: imagePath },
+      //   { type: 'photo', media: imagePath2 },
+      // ]);
     }
   },
   null,

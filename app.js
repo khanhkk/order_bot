@@ -799,6 +799,90 @@ const jobOrder = new CronJob(
   'Asia/Ho_Chi_Minh',
 );
 
+const jobReminder = new CronJob(
+  '10 17 * * 5',
+  async () => {
+    const olds = await getData(FILE_PATHS.OLD);
+    console.log('olds:', olds);
+
+    const orders = await getData(FILE_PATHS.ORDER);
+
+    for (const owner in orders) {
+      orders[owner].paid && orders[owner].received && delete orders[owner];
+    }
+    console.log('orders:', orders);
+
+    const aggregate = { ...olds, ...orders };
+
+    if (Object.keys(aggregate).length) {
+      const data = Object.values(aggregate).reduce((prev, cur) => {
+        if (!cur.received) {
+          if (prev[format(new Date(cur.date), 'dd/MM/yyyy')]) {
+            prev[format(new Date(cur.date), 'dd/MM/yyyy')].push(cur);
+          } else {
+            prev[format(new Date(cur.date), 'dd/MM/yyyy')] = [cur];
+          }
+        }
+
+        return prev;
+      }, {});
+
+      let tableMessage = '<b>BẢNG TỔNG HỢP</b>';
+      for (const date of Object.keys(data)) {
+        tableMessage = tableMessage.concat(`\n🗓 Ngày ${date}: `);
+
+        const orderInDate = data[date];
+        for (const i in orderInDate) {
+          tableMessage = tableMessage.concat(
+            `\n\t\t\t\t${+i + 1}. ${orderInDate[i].name}: ${
+              orderInDate[i].text
+            }`,
+          );
+        }
+      }
+
+      // không tìm kiếm thấy kết quả
+      if (!tableMessage) {
+        return;
+      }
+
+      console.log('aggregate:', aggregate);
+
+      const unpaid_persons = Object.values(aggregate).reduce((prev, cur) => {
+        if (!prev.find((x) => x === cur.name)) {
+          prev.push(cur.name);
+        }
+
+        return prev;
+      }, []);
+
+      const taggedName = unpaid_persons.map((p) => '@' + p).join(', ');
+
+      let notificationList = [
+        `Sau khi tổng hợp số liệu tuần qua, MÈO <b>HAY QUÊN</b> phát hiện ra 🕵🏻‍♂️🕵🏻‍♂️ còn ${taggedName} chưa đưa lúa về kho. Mọi người kiểm tra lại và mang lúa cho chủ shop nhé.`,
+        `Ayza, mai đã là cuối tuần rùi!!! Hình như còn ${taggedName} chưa trả lúa cho chủ shop thì phải á 👨🏻‍🌾👨🏻‍🌾👨🏻‍🌾`,
+        `${taggedName} ơi... Mau mang lúa cho chủ shop đi xay lấy gạo thổi cơm cho tuần sau nhé 👨🏻‍🍳👨🏻‍🍳👨🏻‍🍳`,
+      ];
+
+      notificationList = shuffle(notificationList);
+      const notiStt =
+        Math.floor(Math.random() * notificationList.length + 1) - 1;
+
+      bot.sendChatAction(GROUP_ID, 'typing');
+      bot.sendMessage(
+        GROUP_ID,
+        `${tableMessage} \n\n <i>${notificationList[notiStt]}</i>`,
+        {
+          parse_mode: 'HTML',
+        },
+      );
+    }
+  },
+  null,
+  true,
+  'Asia/Ho_Chi_Minh',
+);
+
 function shuffle(a) {
   var j, x, i;
   for (i = a.length - 1; i > 0; i--) {

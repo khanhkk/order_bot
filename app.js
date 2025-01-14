@@ -854,9 +854,9 @@ const jobReminder = new CronJob(
       const taggedName = unpaid_persons.map((p) => '@' + p).join(', ');
 
       let notificationList = [
-        `Sau khi tổng hợp số liệu tuần qua, MÈO <b>HAY QUÊN</b> phát hiện ra 🕵🏻‍♂️🕵🏻‍♂️ còn ${taggedName} chưa đưa lúa về kho. Mọi người kiểm tra lại và mang lúa về cho chủ shop nhé.`,
-        `Ayza, mai đã là cuối tuần rùi!!! Hình như còn ${taggedName} chưa trả lúa cho chủ shop thì phải á 👨🏻‍🌾👨🏻‍🌾👨🏻‍🌾`,
-        `${taggedName} ơi... Mau mang lúa về cho chủ shop đi xay lấy gạo thổi cơm cho tuần sau nhé 👨🏻‍🍳👨🏻‍🍳👨🏻‍🍳`,
+        `Sau khi tổng hợp số liệu tuần qua, MÈO <b>HAY QUÊN</b> phát hiện ra 🕵🏻‍♂️🕵🏻‍♂️ còn ${taggedName} chưa mang thóc về kho. Mọi người kiểm tra lại và mang thóc về cho chủ shop nhé.`,
+        `Ayza, mai đã là cuối tuần rùi!!! Hình như còn ${taggedName} chưa trả thóc cho chủ shop thì phải á 👨🏻‍🌾👨🏻‍🌾👨🏻‍🌾`,
+        `${taggedName} ơi... Mau mang thóc về cho chủ shop đi xay lấy gạo thổi cơm cho tuần sau nhé 👨🏻‍🍳👨🏻‍🍳👨🏻‍🍳`,
       ];
 
       notificationList = shuffle(notificationList);

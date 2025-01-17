@@ -843,13 +843,15 @@ const jobReminder = new CronJob(
 
       console.log('aggregate:', aggregate);
 
-      const unpaid_persons = Object.values(aggregate).reduce((prev, cur) => {
-        if (!prev.find((x) => x === cur.name)) {
-          prev.push(cur.name);
-        }
+      const unpaid_persons = Object.values(aggregate)
+        .filter((o) => !o.received)
+        .reduce((prev, cur) => {
+          if (!prev.find((x) => x === cur.name)) {
+            prev.push(cur.name);
+          }
 
-        return prev;
-      }, []);
+          return prev;
+        }, []);
 
       const taggedName = unpaid_persons.map((p) => '@' + p).join(', ');
 

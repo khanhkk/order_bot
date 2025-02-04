@@ -837,7 +837,7 @@ const jobReminder = new CronJob(
       }
 
       // không tìm kiếm thấy kết quả
-      if (!tableMessage) {
+      if (!Object.keys(data).length) {
         return;
       }
 

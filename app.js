@@ -961,7 +961,7 @@ const jobTakeLunch = new CronJob(
         .join(', ');
       const message = `<i>🗓Ngày mới lại tới, hôm nay MÈO <b>HAM ĂN</b> đã ngẫu nhiên chọn ra <b>${todayKindBeeUserNames}</b> là người đi lấy cơm giúp mọi người ${todayKindBees.map(
         (item) => '🐝',
-      )}\n🚩 Vị trí: khu vực bàn tròn tầng 1, túi có tên Khánh LĐT(để ý số suất cơm nhé)\n⏰ Thời gian: 11h 55'\n\t\t\t\t\t\t\t\t😍Cám ơn <b>${todayKindBeeUserNames}</b> rất nhiều 😍</i>`;
+      )}\n🚩 Vị trí: khu vực bàn lễ tân tầng 1(để ý số suất cơm nhé)\n⏰ Thời gian: 11h 55'\n\t\t\t\t\t\t\t\t😍Cám ơn <b>${todayKindBeeUserNames}</b> rất nhiều 😍</i>`;
 
       //update histories
       kindBeesHistories.push(todayKindBeeUserNames);
@@ -986,9 +986,7 @@ const jobReturnBox = new CronJob(
 
       const message = `<i><b>${todayKindBees}</b> ơi, đừng quên trả lại hộp cơm cho nhà bếp nhé ${todayKindBees
         .split(',')
-        .map(
-          (item) => '🐝',
-        )}</i>\n(nếu không thấy người giao cơm có thể để gọn túi đồ vào 1 góc tầng 1)`;
+        .map((item) => '🐝')}</i>\n(Để gọn túi đồ vào góc sảnh tầng 1)`;
 
       bot.sendChatAction(GROUP_ID, 'typing');
       bot.sendMessage(GROUP_ID, message, { parse_mode: 'HTML' });
